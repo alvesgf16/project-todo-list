@@ -4,13 +4,15 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Uma lista de tarefas usando HTML, CSS e JavaScript.">
   <link rel="stylesheet" href="style.css">
-  <title>Document</title>
+  <title>To-do List</title>
 </head>
 <body>
   <header><h1>Minha Lista de Tarefas</h1></header>
   <p id="funcionamento">Clique duas vezes em um item para marcá-lo como completo</p>
-  <input type="text" id="texto-tarefa">
+  <label for="texto-tarefa">Tarefa a ser adicionada: </label>
+  <input type="text" id="texto-tarefa" class="text-input">
   <div id='buttons-container'></div>
   <ol id="lista-tarefas"></ol>
   <script src="script.js"></script>

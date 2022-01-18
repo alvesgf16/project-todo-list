@@ -1,18 +1,25 @@
-const taskInput = document.getElementById('texto-tarefa');
-const buttonsContainer = document.getElementById('buttons-container');
-const taskList = document.getElementById('lista-tarefas');
-const task = JSON.parse(localStorage.getItem('taskList'));
+function createButton(idStr, textStr, taskFunc) {
+  const button = document.createElement('button');
+  const buttonsContainer = document.getElementById('buttons-container');
+
+  button.id = idStr;
+  button.innerText = textStr;
+  button.className = 'nav-item'
+  button.addEventListener('click', taskFunc);
+
+  buttonsContainer.appendChild(button);
+}
 
 function selectTask(event) {
   const currentTask = document.getElementById('selected');
 
   if (currentTask) {
     currentTask.id = '';
-  }
+  }  
 
   const selectedTask = event.target;
   selectedTask.id = 'selected';
-}
+}  
 
 function toggleCompletion(event) {
   const selectedTask = event.target;
@@ -21,11 +28,12 @@ function toggleCompletion(event) {
     selectedTask.className = '';
   } else {
     selectedTask.className = 'completed';
-  }
-}
+  }  
+}  
 
 function createTask(taskDescription, classString) {
   const newTask = document.createElement('li');
+  const taskList = document.getElementById('lista-tarefas');
 
   newTask.innerText = taskDescription;
   newTask.className = classString;
@@ -33,39 +41,18 @@ function createTask(taskDescription, classString) {
   newTask.addEventListener('dblclick', toggleCompletion);
 
   taskList.appendChild(newTask);
-}
+}  
 
-function clearInput() {
+function addTask() {
+  const taskInput = document.getElementById('texto-tarefa');
+
+  createTask(taskInput.value);
   taskInput.value = '';
-}
+}  
 
-function createTaskButton() {
-  const taskButton = document.createElement('button');
-
-  taskButton.id = 'criar-tarefa';
-  taskButton.innerText = 'Criar tarefa';
-  taskButton.addEventListener('click', () => {
-    createTask(taskInput.value);
-    clearInput();
-  });
-
-  buttonsContainer.appendChild(taskButton);
-}
-
-function clearAll() {
-  while (taskList.firstChild) {
-    taskList.removeChild(taskList.firstChild);
-  }
-}
-
-function createClearButton() {
-  const clearButton = document.createElement('button');
-
-  clearButton.id = 'apaga-tudo';
-  clearButton.innerText = 'Apagar tudo';
-  clearButton.addEventListener('click', clearAll);
-
-  buttonsContainer.appendChild(clearButton);
+function removeSelectedTask() {
+  const selectedTask = document.getElementById('selected');
+  selectedTask.remove();
 }
 
 function removeDoneTasks() {
@@ -77,45 +64,13 @@ function removeDoneTasks() {
   }
 }
 
-function createRemoveDoneButton() {
-  const removeDoneButton = document.createElement('button');
+function clearAll() {
+  const taskList = document.getElementById('lista-tarefas');
 
-  removeDoneButton.id = 'remover-finalizados';
-  removeDoneButton.innerText = 'Remover finalizados';
-  removeDoneButton.addEventListener('click', removeDoneTasks);
-
-  buttonsContainer.appendChild(removeDoneButton);
-}
-
-function transformElementToObject(element) {
-  const Object = { text: element.innerText, class: element.className };
-
-  return Object;
-}
-
-function saveTasks() {
-  localStorage.clear();
-  const tasks = document.getElementsByTagName('li');
-  const tasksArray = [];
-
-  for (let index = 0; index < tasks.length; index += 1) {
-    const taskObject = transformElementToObject(tasks[index]);
-
-    tasksArray.push(taskObject);
-  }
-
-  localStorage.setItem('taskList', JSON.stringify(tasksArray));
-}
-
-function createSaveButton() {
-  const saveButton = document.createElement('button');
-
-  saveButton.id = 'salvar-tarefas';
-  saveButton.innerText = 'Salvar';
-  saveButton.addEventListener('click', saveTasks);
-
-  buttonsContainer.appendChild(saveButton);
-}
+  while (taskList.firstChild) {
+    taskList.removeChild(taskList.firstChild);
+  }  
+}  
 
 function moveTaskUp() {
   const selectedElement = document.getElementById('selected');
@@ -136,16 +91,6 @@ function moveTaskUp() {
       targetElement.id = 'selected';
     }
   }
-}
-
-function createMoveUpButton() {
-  const moveUpButton = document.createElement('button');
-
-  moveUpButton.id = 'mover-cima';
-  moveUpButton.innerText = 'Mover para cima';
-  moveUpButton.addEventListener('click', moveTaskUp);
-
-  buttonsContainer.appendChild(moveUpButton);
 }
 
 function moveTaskDown() {
@@ -169,52 +114,43 @@ function moveTaskDown() {
   }
 }
 
-function createMoveDownButton() {
-  const moveUpButton = document.createElement('button');
+function transformElementToObject(element) {
+  const Object = { text: element.innerText, class: element.className };
 
-  moveUpButton.id = 'mover-baixo';
-  moveUpButton.innerText = 'Mover para baixo';
-  moveUpButton.addEventListener('click', moveTaskDown);
+  return Object;
+}  
 
-  buttonsContainer.appendChild(moveUpButton);
-}
+function saveTasks() {
+  localStorage.clear();
+  const tasks = document.getElementsByTagName('li');
+  const tasksArray = [];
 
-function removeSelectedTask() {
-  const selectedTask = document.getElementById('selected');
-  selectedTask.remove();
-}
+  for (let index = 0; index < tasks.length; index += 1) {
+    const taskObject = transformElementToObject(tasks[index]);
 
-function createRemoveSelectedButton() {
-  const removeSelectedButton = document.createElement('button');
+    tasksArray.push(taskObject);
+  }  
 
-  removeSelectedButton.id = 'remover-selecionado';
-  removeSelectedButton.innerText = 'Remover tarefa selecionada';
-  removeSelectedButton.addEventListener('click', removeSelectedTask);
-
-  buttonsContainer.appendChild(removeSelectedButton);
-}
-
-function getStoredTasks() {
-  for (let index = 0; index < task.length; index += 1) {
-    if (task[index].class) {
-      createTask(task[index].text, task[index].class);
-    }
-  }
-}
+  localStorage.setItem('taskList', JSON.stringify(tasksArray));
+}  
 
 function generateStoredTasks() {
-  if (task) {
-    getStoredTasks();
+  const storedTasks = JSON.parse(localStorage.getItem('taskList'));
+
+  if (storedTasks) {
+    storedTasks.forEach((task) => {
+      if (task.class) createTask(task.text, task.class);
+    });
   }
 }
 
 window.onload = () => {
-  createTaskButton();
-  createClearButton();
-  createRemoveDoneButton();
-  createSaveButton();
-  createMoveUpButton();
-  createMoveDownButton();
-  createRemoveSelectedButton();
+  createButton('criar-tarefa', 'Criar tarefa', addTask);
+  createButton('remover-selecionado', 'Remover tarefa', removeSelectedTask);
+  createButton('remover-finalizados', 'Remover finalizados', removeDoneTasks);
+  createButton('apaga-tudo', 'Apagar tudo', clearAll);
+  createButton('mover-cima', 'Mover para cima', moveTaskUp);
+  createButton('mover-baixo', 'Mover para baixo', moveTaskDown);
+  createButton('salvar-tarefas', 'Salvar', saveTasks);
   generateStoredTasks();
 };
